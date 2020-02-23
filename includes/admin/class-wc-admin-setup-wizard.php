@@ -1225,7 +1225,12 @@ class WC_Admin_Setup_Wizard {
 		$weight_unit      = sanitize_text_field( wp_unslash( $_POST['weight_unit'] ) );
 		$dimension_unit   = sanitize_text_field( wp_unslash( $_POST['dimension_unit'] ) );
 		$existing_zones   = WC_Shipping_Zones::get_zones();
+		$currency_symbols = get_woocommerce_currency_symbols();
 		// @codingStandardsIgnoreEnd
+
+		foreach ( $currency_symbols as $symbol ) {
+			array_push( $currency_symbols, html_entity_decode( $symbol ) );
+		}
 
 		update_option( 'woocommerce_ship_to_countries', '' );
 		update_option( 'woocommerce_weight_unit', $weight_unit );
@@ -1275,7 +1280,7 @@ class WC_Admin_Setup_Wizard {
 					wp_json_encode(
 						array(
 							'method_id' => $domestic_method,
-							'settings'  => wc_clean( wp_unslash( $_POST['shipping_zones']['domestic'][ $domestic_method ] ) ),
+							'settings'  => str_replace( $currency_symbols, '', wc_clean( wp_unslash( $_POST['shipping_zones']['domestic'][ $domestic_method ] ) ) ),
 						)
 					)
 				);
@@ -1293,7 +1298,7 @@ class WC_Admin_Setup_Wizard {
 					wp_json_encode(
 						array(
 							'method_id' => $intl_method,
-							'settings'  => wc_clean( wp_unslash( $_POST['shipping_zones']['intl'][ $intl_method ] ) ),
+							'settings'  => str_replace( $currency_symbols, '', wc_clean( wp_unslash( $_POST['shipping_zones']['intl'][ $intl_method ] ) ) ),
 						)
 					)
 				);
